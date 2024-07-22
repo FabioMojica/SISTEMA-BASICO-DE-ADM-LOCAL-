@@ -10,7 +10,7 @@ const NavBar = ({closeNavBar}) => {
   };
 
   return (
-    <nav className="absolute left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
+    <nav className="absolute z-10 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
       <ul className="space-y-4 p-4">
         <li>
           <button 
@@ -31,7 +31,7 @@ const NavBar = ({closeNavBar}) => {
               </li>
               <li>
                 <Link 
-                  to="/ventas/ver" 
+                  to="/sales/seeSales" 
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
                   onClick={closeNavBar}
                   >

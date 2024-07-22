@@ -1,8 +1,8 @@
 // src/pages/RegisterSale.js
 import { useState, useEffect } from 'react';
-import FormSale from '../COMPONENTS/SALES/FormSale'
-import Cart from '../COMPONENTS/SALES/Cart';
-import Invoice from '../COMPONENTS/SALES/Invoice';
+import FormSale from '../COMPONENTS/SALES/RegisterSale/FormSale';
+import Cart from '../COMPONENTS/SALES/RegisterSale/Cart';
+import Invoice from '../COMPONENTS/SALES/RegisterSale/Invoice';
 import { getProductsRequest } from '../api/products';
 
 const RegisterSale = () => {

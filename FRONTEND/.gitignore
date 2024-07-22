@@ -8,9 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Ignorar node_modules del frontend
-FRONTEND/node_modules/
+./FRONTEND/node_modules
 # Ignorar node_modules del backend
-BACKEND/node_modules/
+../BACKEND/node_modules
+
 node_modules
 dist
 dist-ssr

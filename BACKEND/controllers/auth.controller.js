@@ -27,7 +27,7 @@ export const register = async (req, res) => {
 
         res.cookie('token', token);
 
-        res.json(userSaved);
+        res.json({message: "register", userSaved});
 
     } catch (error) {
         res.json(error);
@@ -49,12 +49,7 @@ export const login = async (req, res) => {
 
         const token = await generateJWT( { id: foundUser._id } );
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'None', // Asegúrate de que sea 'None' si estás usando cookies de terceros
-            secure: true, // Necesario para 'None'
-            expires: new Date(Date.now() + 3600000) // 1 hora de expiración
-        });
+        res.cookie('token', token);
 
         res.json({message: "login", foundUser});
 

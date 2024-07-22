@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { loginRequest, logoutRequest } from "../api/authentication";
 import { getProductsRequest } from "../api/products";
-import { validateToken } from "../api/authentication";
+import { validateTokenRequest } from "../api/authentication";
 import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
@@ -15,8 +15,9 @@ export const useAuth = () => {
 
 export const AuthProvider = ( { children } ) => {
     const [ user, setUser ] = useState(null);
-    const [ isAuthenticated, setIsAuthenticated ] = useState(false);
-    
+    const [ isAuthenticated, setIsAuthenticated ] = useState(false);  
+    const [ isLoading, setIsLoading ] = useState(true);
+
     const signIn = async (data) => {
         try {
             const res = await loginRequest(data);
@@ -46,25 +47,30 @@ export const AuthProvider = ( { children } ) => {
             return {isError: true, error: e};
         }
     }
-
-    /*
+    
     useEffect( () => {
         const verifyJWT = async () => {
             const cookies = Cookies.get();
-            console.log(cookies)
-            if(cookies.token){
-                console.log("true");
-                try {
-                    const res = await validateToken(cookies.token);
-                    setUser(res.data.name);
-                    console.log(res.data.name);
-                } catch (error) {
-                    console.log(error);
-                }
+            if(!cookies.token) {
+                setUser(null),
+                setIsAuthenticated(false);
+                setIsLoading(false);
             }
+            try {
+                const res = await validateTokenRequest();
+                console.log(res);
+                setUser(res.data.name)
+                setIsAuthenticated(true);
+                setIsLoading(false);
+            } catch (error) {
+                console.log(error);
+                setUser(null);
+                setIsAuthenticated(false);
+                setIsLoading(false);
+            }    
         }
         verifyJWT();
-    },[]);*/
+    },[]);
 
     return (
         <>
@@ -76,6 +82,7 @@ export const AuthProvider = ( { children } ) => {
                 setUser,
                 user,
                 isAuthenticated,
+                isLoading,
             }}
         >
             { children }

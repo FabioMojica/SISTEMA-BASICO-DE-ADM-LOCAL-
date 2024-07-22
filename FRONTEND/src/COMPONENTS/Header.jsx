@@ -41,7 +41,7 @@ const Header = () => {
         <div className="relative flex items-center space-x-4">
           <button 
             onClick={toggleUserMenu} 
-            className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 rounded-full shadow-md hover:bg-gray-100 transition-colors">
+            className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
             <span className="text-lg font-medium">{user}</span>
             <FaUser className="text-2xl" />
           </button>

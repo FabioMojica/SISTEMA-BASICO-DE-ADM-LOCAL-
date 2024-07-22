@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { addSaleRequest } from '../../api/orders.js'
+import { addSaleRequest } from "../../../api/orders";
+import ErrorModal from "../../ErrorModal";
 
 const Invoice = ({ cartItems, client, onResetSale }) => {
   const [confirmDialog, setConfirmDialog] = useState(false);
@@ -25,11 +26,9 @@ const Invoice = ({ cartItems, client, onResetSale }) => {
     };
     try {
       const res = await addSaleRequest(sale);
-      console.log(res);
       setConfirmDialog(true);
     } catch (error) {
-
-      setError(error.message + ` "${error.response.data.message}"`); // Establecer el mensaje de error en el estado
+      setError({error}); // Establecer el mensaje de error en el estado
     }
   };
 
@@ -91,20 +90,7 @@ const Invoice = ({ cartItems, client, onResetSale }) => {
               </div>
             </div>
           )}
-
-          {error && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <p className="text-lg text-red-500 font-semibold">Error: {error}</p>
-                <button
-                  onClick={() => setError(null)}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-700 mt-4"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          )}
+          {error && <ErrorModal error={error} /> }
         </>
       ) : (
         <p className="text-gray-500 text-center">No hay productos para mostrar.</p>

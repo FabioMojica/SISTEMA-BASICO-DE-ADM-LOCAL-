@@ -12,12 +12,12 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors({
+app.use(cors({/*
     origin: (origin, callback) => {
         callback(null, origin); // Permite cualquier origen
-    },
-    //origin: 'http://localhost:5173',
-    credentials: true // Access to credentials
+    },*/
+    origin: 'http://localhost:5173',
+    credentials: true, // Access to credentials
 }));
 
 app.use(morgan('dev'));

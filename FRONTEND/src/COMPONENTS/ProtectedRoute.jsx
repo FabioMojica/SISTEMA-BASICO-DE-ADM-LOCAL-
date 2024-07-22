@@ -1,23 +1,20 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthContext"
-
+import LoadingMessage from "./LoandingMessage";
 
 // Replace doesn't let you go to previus page
 
 const ProtectedRoute = () => {
-    console.log("hola");
-    const {isAuthenticated} = useAuth();
+    const {isAuthenticated, isLoading} = useAuth();
 
-    console.log(isAuthenticated)
+    if(isLoading) return <LoadingMessage></LoadingMessage>;
 
-    if(!isAuthenticated) {
-        console.log(isAuthenticated) 
-        return <Navigate to={'/login'} replace />
-    }
+    if(!isLoading && !isAuthenticated) return <Navigate to={'/login'} replace />
+    
 
-  return (
-      <Outlet></Outlet>
-  )
+    return (    
+    <Outlet></Outlet>
+    );
 }
 
 export default ProtectedRoute
