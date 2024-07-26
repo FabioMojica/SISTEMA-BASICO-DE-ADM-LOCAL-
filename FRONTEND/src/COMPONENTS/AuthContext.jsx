@@ -3,6 +3,7 @@ import { loginRequest, logoutRequest } from "../api/authentication";
 import { getProductsRequest } from "../api/products";
 import { validateTokenRequest } from "../api/authentication";
 import Cookies from 'js-cookie';
+import ErrorModal from "./ErrorModal";
 
 export const AuthContext = createContext();
 
@@ -17,11 +18,12 @@ export const AuthProvider = ( { children } ) => {
     const [ user, setUser ] = useState(null);
     const [ isAuthenticated, setIsAuthenticated ] = useState(false);  
     const [ isLoading, setIsLoading ] = useState(true);
+    const [ error, setError ] = useState(null);
 
     const signIn = async (data) => {
         try {
             const res = await loginRequest(data);
-            setUser(res.data);
+            console.log(res);
             setIsAuthenticated(true);
             return res;
         } catch(e){
@@ -52,18 +54,18 @@ export const AuthProvider = ( { children } ) => {
         const verifyJWT = async () => {
             const cookies = Cookies.get();
             if(!cookies.token) {
+                setError("ERROR");
                 setUser(null),
                 setIsAuthenticated(false);
                 setIsLoading(false);
             }
             try {
                 const res = await validateTokenRequest();
-                console.log(res);
-                setUser(res.data.name)
+                setUser({name: res.data.name, email: res.data.email})
                 setIsAuthenticated(true);
                 setIsLoading(false);
             } catch (error) {
-                console.log(error);
+                setError(error);
                 setUser(null);
                 setIsAuthenticated(false);
                 setIsLoading(false);
@@ -83,9 +85,12 @@ export const AuthProvider = ( { children } ) => {
                 user,
                 isAuthenticated,
                 isLoading,
+                error, 
+                setError
             }}
         >
             { children }
+            {error && <ErrorModal error={error} setError={setError} />}
         </AuthContext.Provider>
         </>
     )

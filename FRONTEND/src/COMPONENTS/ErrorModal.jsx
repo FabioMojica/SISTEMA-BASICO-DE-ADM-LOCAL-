@@ -1,35 +1,40 @@
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
-const ErrorModal = ({ error }) => {
-    console.log(error.error.response.data.token)
-    const { logOut } = useAuth();
-    const [ onClose, setOnClose ] = useState(false);
-    const navigate = useNavigate();
+const ErrorModal = ({ error, setError }) => {
+  const { logOut } = useAuth();
+  const [errorMessage, setErrorMessage] = useState("");
 
-    const handleAcceptClick = async () => {
-        if(error.error.response.data.token === true){
-            try {
-                await logOut();
-                /*
-                navigate('/login', {
-                    replace: true
-                })*/
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        setOnClose(true);
-        return;
-  } 
+  useEffect(() => {
+    if (error) {
+      // Obtiene el mensaje de error desde el objeto error
+      const message = error?.response?.data?.message || "Ha ocurrido un error inesperado";
+      setErrorMessage(message);
+    }
+  }, [error]);
+
+  const handleAcceptClick = async () => {
+    // Verifica si el error tiene un token
+    if (error?.response?.data?.token) {
+      try {
+        setError(null);
+        await logOut();
+      } catch (error) {
+        setError(null);
+      }
+    } else {
+      setError(null);
+    }
+  };
 
   if (!error) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-        <p className="mb-4 text-lg font-semibold text-red-700">{error.error.response.data.message}</p>
+        <p className="mb-4 text-lg font-semibold text-red-700">
+          {errorMessage}
+        </p>
         <button
           onClick={handleAcceptClick}
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"

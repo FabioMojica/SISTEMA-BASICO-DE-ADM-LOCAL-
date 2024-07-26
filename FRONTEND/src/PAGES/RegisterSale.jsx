@@ -4,6 +4,7 @@ import FormSale from '../COMPONENTS/SALES/RegisterSale/FormSale';
 import Cart from '../COMPONENTS/SALES/RegisterSale/Cart';
 import Invoice from '../COMPONENTS/SALES/RegisterSale/Invoice';
 import { getProductsRequest } from '../api/products';
+import { addSaleRequest } from '../api/orders';
 
 const RegisterSale = () => {
   const [products, setProducts] = useState([]); // Array de productos que se mostrarán en FormSale
@@ -12,6 +13,9 @@ const RegisterSale = () => {
   const [clientCI, setClientCI] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+  const [ confirmDialog, setConfirmDialog ] = useState(false);
+  const [ error, setError ] = useState(null);
+
 
   useEffect(() => {
     async function fetchProducts(){
@@ -34,6 +38,7 @@ const RegisterSale = () => {
     setClientCI('');
     setSearchTerm('');
     setCartItems([]);
+    setConfirmDialog(false);
     setShowCancelConfirmation(false);
   };
   
@@ -42,9 +47,30 @@ const RegisterSale = () => {
     setClientCI('');
     setSearchTerm('');
     setCartItems([]);
+    setConfirmDialog(false);
+  };
+
+  const handleOnConfirmSale = async (sale) => {
+    const newSale = {
+      client: sale.client,
+      ci: sale.ci,
+      products: cartItems.map(product => ({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: product.quantity
+      })),
+      totalAmount: cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2) // Total dinámico
+    };
+    try {
+      const res = await addSaleRequest(newSale);
+      setConfirmDialog(true);
+    } catch (error) {
+      console.log(error)
+      setError(error); // Establecer el mensaje de error en el estado
+    }
   };
   
-
   const handleQuantityChange = (index, quantity) => {
     const updatedCartItems = cartItems.map((item, i) =>
       i === index ? { ...item, quantity } : item
@@ -118,12 +144,16 @@ const RegisterSale = () => {
             onRemoveItem={handleRemoveItem}
             onGenerateInvoice={handleGenerateInvoice}
           />
-        </div>
+        </div> 
         <div className="md:col-span-1">
           <Invoice 
             cartItems={cartItems} 
             client={{client:clientName, ci:clientCI}}
             onResetSale={resetSale}
+            handleOnConfirmSale={handleOnConfirmSale}
+            confirmDialog={confirmDialog}
+            error={error}
+            setError={setError}
           />
         </div>
       </div>

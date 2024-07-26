@@ -71,6 +71,26 @@ export const logout = (req, res) => {
     }
 }
 
+export const verifyPassword = async (req, res) => {
+    const { email, password } = req.body; 
+    console.log("body", req.body)
+
+    try {
+        const foundUser = await User.findOne({email: email});
+
+        if(!foundUser) return res.status(401).json({message: "Usuario no encontrado"});
+
+        const match = await bcrypt.compare(password, foundUser.password);
+
+        if(!match) return res.status(401).json({message: "Contraseña incorrecta"});
+
+        res.json({message: "Autenticacion exitosa", user: foundUser});
+
+    } catch (error) {
+        res.status(500).json({ message: "Error en el servidor" });
+    }
+}
+
 export const verifyToken = (req, res) => {
     const {token} = req.cookies;
 

@@ -1,16 +1,24 @@
-import { Link } from "react-router-dom";
+import { format } from 'date-fns';
 
-const Sale = ({ sale }) => {
+
+const Sale = ({ sale, setViewSale }) => {
+  const formattedDate = format(new Date(sale.date), 'dd/MM/yyyy HH:mm');
+
   return (
-    <Link to={`/sales/${sale._id}`} className="block p-4 border rounded-lg shadow-md hover:bg-gray-100 transition-colors">
-      <div className="flex flex-col space-y-2">
-        <span className="font-semibold">Cliente: {sale.client || 'No disponible'}</span>
-        <span className="font-semibold">CI: {sale.ci || 'No disponible'}</span>
-        <span className="font-semibold">Monto: ${sale.totalAmount}</span>
-        <span className="font-semibold">Fecha: {new Date(sale.date).toLocaleDateString()}</span>
-      </div>
-    </Link> 
+    <div 
+      onClick={() => setViewSale(sale._id)} 
+      className="flex justify-between items-center border-b p-2 cursor-pointer hover:bg-gray-100"
+    >
+      <span className="w-1/4 truncate">{sale.client}</span>
+      <span className="w-1/4 truncate">{sale.ci}</span>
+      <span className="w-1/4 truncate">{sale.totalAmount}</span>
+      <span className="w-1/4 truncate">{formattedDate}</span>
+    </div>
   );
 };
 
 export default Sale;
+
+
+
+

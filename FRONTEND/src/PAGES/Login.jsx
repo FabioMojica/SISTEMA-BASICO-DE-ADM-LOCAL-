@@ -23,7 +23,7 @@ const Login = () => {
 
         if(res.isError) return setError(res.error.response.data.message);
         
-        setUser(res.data.foundUser.name);
+        setUser({name: res.data.foundUser.name, email: res.data.foundUser.email});
 
         navigate('/products');
     }

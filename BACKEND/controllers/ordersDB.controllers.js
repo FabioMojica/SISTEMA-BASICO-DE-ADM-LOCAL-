@@ -40,6 +40,18 @@ export const addOrderDB = async (req, res) => {
             totalAmount: orderData.totalAmount,
             date: orderData.date // Utilizar la misma fecha recibida desde addOrderReturnData
         });
+        
+        // TODO: FIX BUG {}, check quantity (INT NUMBER)
+        await Promise.all(newOrder.products.map(async productOrdered => {
+            console.log(productOrdered._id);
+            const foundProduct = await Product.findById(productOrdered.id);
+            if (!foundProduct){ 
+                const error = new Error(`Producto ${productOrdered.name} no encontrado`);
+                error.productName = productOrdered.name,
+                error.notFound = true;
+                throw error;
+            }
+        }));
 
         // Guardar la nueva orden en la base de datos
         const savedOrder = await newOrder.save();
@@ -51,7 +63,14 @@ export const addOrderDB = async (req, res) => {
         });
         
     } catch(e) {
-        res.status(500).json({message: e.message});
+        console.log(e.message);
+        if (e.notFound) {
+            return res.status(404).json({
+                message: `Error! El producto ${e.productName} ha sido borrado, consulte la página de productos`
+            });
+        }
+        
+        return res.status(500).json({ message: e.message });
     }   
 };
 
@@ -104,35 +123,42 @@ export const addOrderReturnData = async (req, res) => {
 
 export const updateOrderDB = async (req, res) => {
     const newOrder = req.body;
+    const newProductsToOrder = newOrder.products.map(product => product);
     const oldOrderId = req.params.id;
 
+    console.log("new Product to order: ", newProductsToOrder);
     console.log(oldOrderId);
-    
-    const newProductsToOrder = newOrder.products.map(product => product);
-
-    console.log(newProductsToOrder);
 
     try {
         // TODO: FIX BUG {}, check quantity (INT NUMBER)
         const productsFound = await Promise.all(newProductsToOrder.map(async productOrdered => {
-            const foundProduct = await Product.findById(productOrdered.id);
-            if (!foundProduct) throw new Error(`Product ID ${productOrdered.id} not found.`);
-            return {
-                _id: foundProduct._id,
+            const foundProduct = await Product.findById(productOrdered._id);
+            console.log(productOrdered._id);
+            if (!foundProduct) {
+                const error = new Error(`Producto ${productOrdered.name} no encontrado`);
+                error.productName = productOrdered.name,
+                error.notFound = true;
+                throw error;
+            }
+            console.log({
+                id: foundProduct._id,
                 name: foundProduct.name,
                 price: foundProduct.price,
-                quantity: productOrdered.orders
-            };
+                quantity: productOrdered.quantity
+            })
+            return {
+                id: foundProduct._id,
+                name: foundProduct.name,
+                price: foundProduct.price,
+                quantity: productOrdered.quantity
+            }
         }));
-
-        console.log("Products found");
-        console.log(productsFound);
 
         const totalAmount = productsFound.reduce((total, product) => total + product.price * product.quantity, 0);
 
-        console.log(totalAmount);
-
         const newOrderToUpdate = ({
+            client: newOrder.client,
+            ci: newOrder.ci,
             products: productsFound.map(p => ({
                 _id: p._id,
                 name: p.name,
@@ -142,17 +168,19 @@ export const updateOrderDB = async (req, res) => {
             totalAmount
         })
 
-        console.log("new order: ");
-        console.log(newOrderToUpdate);
-
         const orderUpdated = await Order.findByIdAndUpdate(oldOrderId, newOrderToUpdate,{
             new: true
         });
 
-        res.json(orderUpdated);
+        res.status(200).json({message: "orderUpdated", orderUpdated});
 
-    } catch (error) {
-        res.json(error);
+    } catch(e) {
+        if (e.notFound) {
+            return res.status(404).json({
+                message: `Error! El producto ${e.productName} ha sido borrado, consulte la página de productos`
+            });
+        }
+        return res.status(500).json({ message: e.message });
     }
 };
 

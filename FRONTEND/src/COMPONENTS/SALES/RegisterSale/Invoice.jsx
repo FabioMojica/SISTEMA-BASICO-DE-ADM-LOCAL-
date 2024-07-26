@@ -1,18 +1,13 @@
-import { useState } from "react";
-import { addSaleRequest } from "../../../api/orders";
 import ErrorModal from "../../ErrorModal";
 
-const Invoice = ({ cartItems, client, onResetSale }) => {
-  const [confirmDialog, setConfirmDialog] = useState(false);
-  const [error, setError] = useState(null); // Estado para manejar el mensaje de error
+const Invoice = ({ cartItems, client, onResetSale, handleOnConfirmSale, confirmDialog, error, setError }) => {
 
   const handlePrint = () => {
     window.print(); 
-    setConfirmDialog(false);
     onResetSale(); // Restablecer los campos y carrito después de imprimir
   };
 
-  const handleConfirmSale = async () => {
+  const confirmSale = async () => {
     const sale = {
       client: client.client,
       ci: client.ci,
@@ -24,17 +19,11 @@ const Invoice = ({ cartItems, client, onResetSale }) => {
       })),
       totalAmount: cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2) // Total dinámico
     };
-    try {
-      const res = await addSaleRequest(sale);
-      setConfirmDialog(true);
-    } catch (error) {
-      setError({error}); // Establecer el mensaje de error en el estado
-    }
+    handleOnConfirmSale(sale);
   };
 
   const handleCancel = () => {
-    setConfirmDialog(false);
-    onResetSale(); // Restablecer los campos y carrito si se cancela
+    onResetSale();
   };
 
   return (
@@ -62,7 +51,7 @@ const Invoice = ({ cartItems, client, onResetSale }) => {
           </ul>
           <div className="mt-4 text-center">
             <button
-              onClick={handleConfirmSale}
+              onClick={confirmSale}
               className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700"
             >
               Confirmar Venta
@@ -90,7 +79,7 @@ const Invoice = ({ cartItems, client, onResetSale }) => {
               </div>
             </div>
           )}
-          {error && <ErrorModal error={error} /> }
+          {error && <ErrorModal error={error} setError={setError}/> }
         </>
       ) : (
         <p className="text-gray-500 text-center">No hay productos para mostrar.</p>

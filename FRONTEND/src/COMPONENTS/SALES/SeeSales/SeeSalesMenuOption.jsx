@@ -28,10 +28,10 @@ const SeeSalesMenuOption = ( {setSelectedOption} ) => {
         {showOptionsMenu && (
           <div className="absolute top-full left-0 mt-2 w-48 p-2 border rounded-lg bg-gray-50 shadow-md">
             <button
-              onClick={() => handleOptionSelect('dailySales')}
+              onClick={() => handleOptionSelect('todaysSales')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left"
             >
-              Registro de venta diaria
+              Hoy
             </button>
             <button
               onClick={() => handleOptionSelect('date')}
