@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LoadingMessage from "../../LoandingMessage";
-import { getSaleRequest } from "../../../api/orders";
+import { getSaleRequest, deleteSaleRequest } from "../../../api/orders";
+import { FaPrint, FaEdit, FaTrashAlt } from "react-icons/fa";
 import AuthenticationPassComponent from "./AuthenticationPassComponent";
+import ConfirmationModal from "../../ConfirmationModal";
 
 const SaleView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sale, setSale] = useState(null);
-  const [showOptions, setShowOptions] = useState(false); // Estado para manejar la visibilidad del componente y el cambio de texto
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [authAction, setAuthAction] = useState(null); // 'edit' or 'delete'
   const { id } = useParams();
+  const navigate = useNavigate(); // Hook para redireccionar
 
   const fetchSale = async () => {
     try {
@@ -16,88 +21,117 @@ const SaleView = () => {
       setSale(res.data);
     } catch (error) {
       console.log(error);
+      // Manejo del error si la venta no se encuentra
+      if (error.response && error.response.status === 404) {
+        navigate('/404'); // Redirige a la página 404
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleAuthSuccess = () => {
+    if (authAction === 'edit') {
+      // Lógica para editar la venta
+      setShowAuthModal(false); // Cierra el modal después de la autenticación
+    } else if (authAction === 'delete') {
+      setShowAuthModal(false); // Cierra el modal después de la autenticación
+      setShowConfirmModal(true); // Muestra el modal de confirmación
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setIsLoading(true);
+      const res = await deleteSaleRequest(id);
+      console.log(res);
+      setShowConfirmModal(false); // Cierra el modal de confirmación
+      navigate('/404', {
+        replace: true
+      }); // Redirige a la página 404 después de eliminar
+    } catch (error) {
+      console.log(error);
+      // Manejo de errores
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setAuthAction('edit');
+    setShowAuthModal(true);
+  };
+
+  const handleDelete = () => {
+    setAuthAction('delete');
+    setShowAuthModal(true);
+  };
+
   useEffect(() => {
     fetchSale();
-  }, []);
+  }, [id]);
 
   if (isLoading) return <LoadingMessage />;
 
+  if (!sale) return <div>Venta no encontrada</div>; // O redirige a una página 404
+
   return (
-    <div className="container mx-auto p-4">
-      {sale && (
-        <>
-          <div className="bg-gray-200 shadow-md rounded p-4 mb-4">
-            <div className="mb-2">
-              <span className="font-bold">Fecha:</span>{" "}
-              {new Date(sale.date).toLocaleDateString()}{" "}
-              <span className="font-bold">Horas:</span>{" "}
-              {new Date(sale.date).toLocaleTimeString()}
-            </div>
-            <div className="mb-2">
-              <span className="font-bold">Cliente:</span> {sale.client}
-            </div>
-            <div className="mb-4">
-              <span className="font-bold">CI:</span> {sale.ci}
-            </div>
-            <div className="mb-4">
-              <span className="font-bold">Compra:</span>
-              <div className="overflow-x-auto">
-                <div className="min-w-full bg-white rounded-lg border">
-                  <div className="flex font-bold py-2 border-b text-center">
-                    <div className="w-1/4">Producto</div>
-                    <div className="w-1/4">Precio</div>
-                    <div className="w-1/4">Cantidad</div>
-                    <div className="w-1/4">Total</div>
-                  </div>
-                  {sale.products.map((product, index) => (
-                    <div
-                      key={index}
-                      className="flex py-2 border-b last:border-none text-center"
-                    >
-                      <div className="w-1/4">{product.name}</div>
-                      <div className="w-1/4">${product.price}</div>
-                      <div className="w-1/4">{product.quantity}</div>
-                      <div className="w-1/4">
-                        ${product.price * product.quantity}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex font-bold py-2 text-center">
-                    <div className="w-3/4">Monto total</div>
-                    <div className="w-1/4">{sale.totalAmount} Bs.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <>
+      <div className="max-w-2xl mx-auto bg-gray-50 shadow-lg rounded-lg overflow-hidden p-6">
+        <div className="mb-4 text-center">
+          <p className="text-md font-semibold text-gray-700">
+            Fecha: {new Date(sale.date).toLocaleDateString()} - Hora: {new Date(sale.date).toLocaleTimeString()}
+          </p>
+          <p className="text-md font-semibold text-gray-700">Cliente: {sale.client}</p>
+          <p className="text-md font-semibold text-gray-700">CI: {sale.ci}</p>
+        </div>
+        <div className="border-t border-gray-200 mt-4">
+          <h2 className="text-lg leading-tight mt-4 mb-2">Productos:</h2>
+          <div className="grid grid-cols-4 gap-4 font-semibold text-gray-600 text-center">
+            <span>Nombre</span>
+            <span>Precio (BS)</span>
+            <span>Cantidad</span>
+            <span>Total (BS)</span>
           </div>
-          <div className="flex gap-1">
-            {!showOptions && (
-              <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                Imprimir factura
-              </button>
-            )}
-            <div className="relative">
-              <button
-                onClick={() => setShowOptions(!showOptions)}
-                className={`px-4 py-2 rounded ${
-                  showOptions
-                    ? "bg-red-500 hover:bg-red-700"
-                    : "bg-yellow-500 hover:bg-yellow-700"
-                } text-white`}
-              >
-                {showOptions ? "Cerrar" : "Opciones de venta"}
-              </button>
+          {sale.products.map((product, index) => (
+            <div key={index} className={`grid grid-cols-4 gap-4 py-2 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}`}>
+              <span>{product.name}</span>
+              <span className="text-center">{product.price}</span>
+              <span className="text-center">{product.quantity}</span>
+              <span className="text-center">{(product.price * product.quantity).toFixed(2)}</span>
             </div>
-          </div>
-          {showOptions && <AuthenticationPassComponent />}
-        </>
-      )}
-    </div>
+          ))}
+        </div>
+        <div className="border-t border-gray-200 mt-4">
+          <h2 className="text-lg leading-tight mt-4">Monto Total: {sale.totalAmount} BS</h2>
+        </div>
+        <div className="mt-4 flex justify-end space-x-4">
+          <button className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2">
+            <FaPrint />
+            <span>Imprimir Factura</span>
+          </button>
+          <button onClick={handleEdit} className="bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center space-x-2">
+            <FaEdit />
+            <span>Editar</span>
+          </button>
+          <button onClick={handleDelete} className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center space-x-2">
+            <FaTrashAlt />
+            <span>Eliminar</span>
+          </button>
+        </div>
+      </div>
+      {showAuthModal && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <AuthenticationPassComponent setIsAuthenticated={handleAuthSuccess} onClose={() => setShowAuthModal(false)} />
+      </div>}
+      {showConfirmModal && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <ConfirmationModal
+          message="¿Estás seguro que deseas eliminar esta venta?"
+          info="Atención: si presionas 'Sí', la venta será eliminada de forma permanente. Los datos borrados no se pueden recuperar."
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      </div>}
+    </>
   );
 };
 

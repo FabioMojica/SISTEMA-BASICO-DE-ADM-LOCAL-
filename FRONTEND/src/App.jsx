@@ -8,6 +8,7 @@ import ProtectedRoute from './COMPONENTS/ProtectedRoute';
 import Home from './PAGES/Home';
 import SeeSales from './PAGES/SeeSales';
 import SaleView from './COMPONENTS/SALES/SeeSales/SaleView';
+import NotFound from './PAGES/NotFound';
 
 function App() {
   return (
@@ -28,13 +29,14 @@ function Main() {
         <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        <Route path='/404' element={<NotFound></NotFound>}/>
+        <Route path='*' element={<NotFound></NotFound>}/>
 
         <Route element={<ProtectedRoute></ProtectedRoute>}>
           <Route path="/products" element={<Products />} />
           <Route path="/sales/newSale" element={<RegisterSale></RegisterSale>} />
           <Route path="/sales/seeSales" element={<SeeSales></SeeSales>} />
           <Route path="/sales/seeSales/viewSale/:id" element={<SaleView></SaleView>} />
-          <Route path='/logout' />
         </Route>
       </Routes>
     </>
