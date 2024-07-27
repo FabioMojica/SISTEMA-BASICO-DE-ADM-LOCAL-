@@ -25,7 +25,7 @@ const Login = () => {
         
         setUser({name: res.data.foundUser.name, email: res.data.foundUser.email});
 
-        navigate('/products');
+        navigate('/home');
     }
 
     const togglePasswordVisibility = () => {

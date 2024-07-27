@@ -33,6 +33,7 @@ function Main() {
         <Route path='*' element={<NotFound></NotFound>}/>
 
         <Route element={<ProtectedRoute></ProtectedRoute>}>
+          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/sales/newSale" element={<RegisterSale></RegisterSale>} />
           <Route path="/sales/seeSales" element={<SeeSales></SeeSales>} />

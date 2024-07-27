@@ -2,8 +2,7 @@ import { FaBars, FaUser } from 'react-icons/fa';
 import { useState } from 'react';
 import NavBar from './NavBar'; 
 import { useAuth } from './AuthContext';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [showNavBar, setShowNavBar] = useState(false);
@@ -36,7 +35,9 @@ const Header = () => {
             className="text-3xl hover:text-yellow-300 transition-colors">
             <FaBars />
           </button>
-          <span className="text-2xl font-semibold">Sistema de Administración</span>
+          <Link to="/home" className="text-2xl font-semibold hover:text-yellow-300 transition-colors">
+              Sistema de Administración
+          </Link>
         </div>
         <div className="relative flex items-center space-x-4">
           <button 
