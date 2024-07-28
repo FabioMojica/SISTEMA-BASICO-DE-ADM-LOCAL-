@@ -9,6 +9,7 @@ import Home from './PAGES/Home';
 import SeeSales from './PAGES/SeeSales';
 import SaleView from './COMPONENTS/SALES/SeeSales/SaleView';
 import NotFound from './PAGES/NotFound';
+import AddProduct from './PAGES/AddProduct';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function Main() {
         <Route element={<ProtectedRoute></ProtectedRoute>}>
           <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products/addProduct" element={<AddProduct />} />
           <Route path="/sales/newSale" element={<RegisterSale></RegisterSale>} />
           <Route path="/sales/seeSales" element={<SeeSales></SeeSales>} />
           <Route path="/sales/seeSales/viewSale/:id" element={<SaleView></SaleView>} />

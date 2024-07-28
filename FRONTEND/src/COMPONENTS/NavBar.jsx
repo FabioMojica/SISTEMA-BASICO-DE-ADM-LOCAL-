@@ -64,7 +64,7 @@ const NavBar = ({ closeNavBar }) => {
               </li>
               <li>
                 <Link
-                  to="/products/add"
+                  to="/products/addProduct"
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
                   onClick={closeNavBar}>
                   <span>Agregar Producto</span>
