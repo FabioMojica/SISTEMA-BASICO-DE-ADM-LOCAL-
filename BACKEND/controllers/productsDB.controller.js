@@ -30,6 +30,9 @@ export const getProductDB = async (req, res) => {
 
 export const addProductDB = async (req, res) => {
     const {name, price} = req.body;
+    const image = req.file ? req.file.path : null;
+
+    console.log(req.body)
 
     const newProduct = new Product({
         name,

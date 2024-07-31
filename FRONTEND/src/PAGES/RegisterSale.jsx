@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import FormSale from '../COMPONENTS/SALES/RegisterSale/FormSale';
 import Cart from '../COMPONENTS/SALES/RegisterSale/Cart';
 import Invoice from '../COMPONENTS/SALES/RegisterSale/Invoice';
-import { getProductsRequest } from '../api/products';
-import { addSaleRequest } from '../api/orders';
+import { getProductsRequest } from '../api/products.js';
+import { addSaleRequest } from '../api/sales.js';
 
 const RegisterSale = () => {
   const [products, setProducts] = useState([]); // Array de productos que se mostrarán en FormSale

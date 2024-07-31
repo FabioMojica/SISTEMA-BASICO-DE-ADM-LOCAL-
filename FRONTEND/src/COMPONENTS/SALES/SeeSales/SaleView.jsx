@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import LoadingMessage from "../../LoandingMessage";
-import { getSaleRequest, deleteSaleRequest } from "../../../api/orders";
+import { getSaleRequest, deleteSaleRequest } from "../../../api/sales.js";
 import { FaPrint, FaEdit, FaTrashAlt } from "react-icons/fa";
 import AuthenticationPassComponent from "./AuthenticationPassComponent";
 import ConfirmationModal from "../../ConfirmationModal";

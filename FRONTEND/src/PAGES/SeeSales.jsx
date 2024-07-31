@@ -2,7 +2,8 @@ import { useState } from 'react';
 import SeeSalesMenuOption from '../COMPONENTS/SALES/SeeSales/SeeSalesMenuOption';
 import ErrorModal from '../COMPONENTS/ErrorModal';
 import TodaysSales from '../COMPONENTS/SALES/SeeSales/TodaysSales';
-import { getSaleRequest, getSalesRequest } from '../api/orders';
+import AllSales from '../COMPONENTS/SALES/SeeSales/AllSales.jsx';
+import { getAllSalesRequest, getSaleRequest, getTodaySalesRequest } from '../api/sales.js'
 
 const SeeSales = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -11,10 +12,20 @@ const SeeSales = () => {
 
   const getTodaysSales = async() =>{
     try {
-        const res = await getSalesRequest();
+        const res = await getTodaySalesRequest();
+        console.log(res)
         return res;
     } catch (error) {
         return error;
+    }
+  }
+
+  const getAllSales = async () => {
+    try {
+      const res = await getAllSalesRequest();
+      return res;
+    } catch (error) {
+      return error;
     }
   }
 
@@ -39,7 +50,16 @@ const SeeSales = () => {
             getTodaysSales={getTodaysSales}
             setViewSale={getSale}
         >
-        </TodaysSales>}
+        </TodaysSales>
+      }
+      {selectedOption === 'allSales' && 
+        <AllSales 
+            setError={setError} 
+            getAllSales={getAllSales}
+            setViewSale={getSale}
+        >
+        </AllSales>
+      }
       {error && (
         <ErrorModal error={error}></ErrorModal>
       )}

@@ -12,6 +12,7 @@ const TodaysSales = ({ setError, getTodaysSales, setViewSale }) => {
   const fetchTodaysSales = async () => {
     try {
       const res = await getTodaysSales();
+      console.log(res);
       setSales(res.data);
       setFilteredSales(res.data);
     } catch (error) {
@@ -38,7 +39,7 @@ const TodaysSales = ({ setError, getTodaysSales, setViewSale }) => {
   
     setFilteredSales(filtered);
   };
-  
+
   const handleRefresh = () => {
     setIsLoading(true);
     fetchTodaysSales();
@@ -48,16 +49,27 @@ const TodaysSales = ({ setError, getTodaysSales, setViewSale }) => {
     return <LoadingMessage />;
   }
 
+  // Obtener y formatear la fecha actual
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
     <div className="p-4 shadow-lg rounded-lg bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl">Ventas de Hoy</h2>
+        <h2 className="text-2xl">
+          Ventas de Hoy
+          <span className="ml-2 text-lg text-gray-600">({formattedDate})</span>
+        </h2>
         <button onClick={handleRefresh} className="text-blue-500 hover:text-blue-700">
           <FaSync className="text-2xl" />
         </button>
       </div>
       <SearchSaleBar onSearch={handleSearch} />
-      <SalesList sales={filteredSales} setViewSale={setViewSale}/>
+      <SalesList sales={filteredSales} setViewSale={setViewSale} />
     </div>
   );
 };

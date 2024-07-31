@@ -13,7 +13,7 @@ const SearchSaleBar = ({ onSearch }) => {
       type="text"
       value={query}
       onChange={handleInputChange}
-      placeholder="Buscar venta(cliente, id, monto)..."
+      placeholder="Buscar venta(cliente, ci, monto)..."
       className="border p-2 rounded-md w-full mb-4"
     />
   );

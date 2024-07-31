@@ -10,11 +10,15 @@ const SalesList = ({ sales, setViewSale }) => {
         <span className="w-1/4">Monto Total</span>
         <span className="w-1/4">Fecha</span>
       </div>
-      {sales.map((sale) => (
-        <Link key={sale._id} to={`/sales/seeSales/viewSale/${sale._id}`}> 
-          <Sale key={sale._id} sale={sale} setViewSale={setViewSale}/>
-        </Link>
-      ))}
+      {sales.length === 0 ? (
+        <div className="p-4 text-center text-gray-500">No hay ventas disponibles</div>
+      ) : (
+        sales.map((sale) => (
+          <Link key={sale._id} to={`/sales/seeSales/viewSale/${sale._id}`}>
+            <Sale key={sale._id} sale={sale} setViewSale={setViewSale} />
+          </Link>
+        ))
+      )}
     </div>
   );
 };
